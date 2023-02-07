@@ -17,7 +17,7 @@ public class HueSorter extends JPanel implements ActionListener {
     int countingTime = 0;
     boolean timerStarted = false;
     String sortType = "sortType: incrementing sort";
-    int animationRunTime = 0;
+    double animationRunTime = 0;
     double realRunTime = 0;
     Timer timer;
     double startTime;
@@ -118,24 +118,6 @@ public class HueSorter extends JPanel implements ActionListener {
 
     }
 
-    public void realtimeIncrementingSort() {
-        int[] copyList = Arrays.copyOf(hueList, hueList.length);// takes a copy of the random colors, uses it to get the
-                                                                // real sort time
-        setOffset();
-        realRunTime = getTime();
-        for (int i = 0; i < copyList.length; i++) {
-            if (copyList[i] == redness) {
-                int tempint = copyList[countingTime];
-                copyList[countingTime] = copyList[i];
-                copyList[i] = tempint;
-                realtimesortcounter++;
-
-            }
-
-        }
-        realRunTime = getTime() - realRunTime;
-    }
-
     public void displayNumbers(Graphics g) { // displays the numbers and times
         g.drawString(sortType, 100, 100);
         String animation = "animationRunTime: ";
@@ -150,8 +132,9 @@ public class HueSorter extends JPanel implements ActionListener {
 
     }
 
-    public void setOffset() {// method that sets the offset variable to the negative runtime, is used to add
-                             // the current runtime later.
+    public void setOffset() {// method that sets the offset variable to the negative runtime, and is used in
+                             // getTime() method to add the current time to obtain the real time
+
         offset = 0 - System.currentTimeMillis();
 
     }
@@ -163,29 +146,57 @@ public class HueSorter extends JPanel implements ActionListener {
     public void quickSort() {
         if (countingTime == 0) {
             int[] copyList = Arrays.copyOf(hueList, hueList.length);
-            if (countingTime == 0) {
-                setOffset();
-                realTimeQuickSort(copyList, 0, 7000);
-                realRunTime = offset + getTime();
-                System.out.println(realRunTime);
-            }
+
+            setOffset();
+            realTimeQuickSort(copyList, 0, 7000);
+            realRunTime = getTime();
+            System.out.println(realRunTime);
+            setOffset();
+
         }
+        countingTime++;
+
+        if (countingTime == 1) {
+
+            animationQuickSort(hueList, 0, 7000);
+        }
+
         // animationRunTime = (int) getTime();
         // quickSortRecursiveCall(copyList, 0, copyList.length-1);
 
     }
 
-    public void quickSortRecursiveCall(int data[], int i, int k) {
+    public void realTimeQuickSort(int arr[], int low, int high) {
+        if (low < high) {
+            /*
+             * pi is partitioning index, arr[pi] is
+             * now at right place
+             */
+            int pi = partition(arr, low, high);
 
-        animationRunTime = (int) (animationRunTime - getTime());
-        int j;
-        if (i > k) {
-            return;
+            // Recursively sort elements before
+            // partition and after partition
+            realTimeQuickSort(arr, low, pi - 1);
+            realTimeQuickSort(arr, pi + 1, high);
         }
-        j = animationPartition(data, i, k);
+    }
 
-        quickSortRecursiveCall(data, i, j);
-        quickSortRecursiveCall(data, j + 1, k);
+    public void animationQuickSort(int arr[], int low, int high) {
+
+        animationRunTime = getTime();
+
+        if (low < high) {
+            /*
+             * pi is partitioning index, arr[pi] is
+             * now at right place
+             */
+            int pi = animationPartition(arr, low, high);
+
+            // Recursively sort elements before
+            // partition and after partition
+            animationQuickSort(arr, low, pi - 1);
+            animationQuickSort(arr, pi + 1, high);
+        }
 
     }
 
@@ -226,27 +237,15 @@ public class HueSorter extends JPanel implements ActionListener {
         return i + 1;
     }
 
-    public void realTimeQuickSort(int arr[], int low, int high) {
-        if (low < high) {
-            /*
-             * pi is partitioning index, arr[pi] is
-             * now at right place
-             */
-            int pi = partition(arr, low, high);
-
-            // Recursively sort elements before
-            // partition and after partition
-            realTimeQuickSort(arr, low, pi - 1);
-            realTimeQuickSort(arr, pi + 1, high);
-        }
-    }
     //
 
     public void incrementingSort() {
         if (countingTime == 0) {
-            realtimeIncrementingSort();
+            int[] copyList = Arrays.copyOf(hueList, hueList.length);
             setOffset();
-            startTime = getTime();
+            realtimeIncrementingSort(copyList);
+            realRunTime = getTime();
+
         }
         if (countingTime < TOTAL_PIXELS) {
             for (int i = 0; i < TOTAL_PIXELS; i++) {
@@ -261,6 +260,20 @@ public class HueSorter extends JPanel implements ActionListener {
             repaint();
         }
         redness++;
+    }
+
+    public void realtimeIncrementingSort(int[] copyList) {
+
+        for (int i = 0; i < copyList.length; i++) {
+            if (copyList[i] == redness) {
+                int tempint = copyList[countingTime];
+                copyList[countingTime] = copyList[i];
+                copyList[i] = tempint;
+                realtimesortcounter++;
+
+            }
+
+        }
     }
 
     public int index = 0;
