@@ -124,7 +124,7 @@ public class HueSorter extends JPanel implements ActionListener {
         String runtime = "realRunTime: ";
         String ticks = "ticks: ";
         g.drawString(animation + String.valueOf(animationRunTime) + " ms", 100, 120);
-        g.drawString(ticks + String.valueOf(countingTime) + " ms", 100, 110);
+        g.drawString(ticks + String.valueOf(countingTime) + " ", 100, 110);
         g.drawString(runtime + String.valueOf(realRunTime), 100, 130);
     }
 
@@ -148,17 +148,17 @@ public class HueSorter extends JPanel implements ActionListener {
             int[] copyList = Arrays.copyOf(hueList, hueList.length);
 
             setOffset();
-            realTimeQuickSort(copyList, 0, 7000);
+            realTimeQuickSort(copyList, 0, hueList.length - 1);
             realRunTime = getTime();
             System.out.println(realRunTime);
             setOffset();
+            countingTime++;
 
         }
-        countingTime++;
 
         if (countingTime == 1) {
-
-            animationQuickSort(hueList, 0, 7000);
+            // instead of calling animationquicksort, set l and h here, and partiation here
+            animationQuickSort(hueList, 0, hueList.length - 1);
         }
 
         // animationRunTime = (int) getTime();
@@ -167,14 +167,14 @@ public class HueSorter extends JPanel implements ActionListener {
     }
 
     public void realTimeQuickSort(int arr[], int low, int high) {
+
         if (low < high) {
-            /*
-             * pi is partitioning index, arr[pi] is
-             * now at right place
-             */
+
+            // pi is partitioning index, arr[p]
+            // is now at right place
             int pi = partition(arr, low, high);
 
-            // Recursively sort elements before
+            // Separately sort elements before
             // partition and after partition
             realTimeQuickSort(arr, low, pi - 1);
             realTimeQuickSort(arr, pi + 1, high);
@@ -182,6 +182,7 @@ public class HueSorter extends JPanel implements ActionListener {
     }
 
     public void animationQuickSort(int arr[], int low, int high) {
+        countingTime++;
 
         animationRunTime = getTime();
 
@@ -192,7 +193,7 @@ public class HueSorter extends JPanel implements ActionListener {
              */
             int pi = animationPartition(arr, low, high);
 
-            // Recursively sort elements before
+            // Recursively sort elements beforeFa
             // partition and after partition
             animationQuickSort(arr, low, pi - 1);
             animationQuickSort(arr, pi + 1, high);
@@ -200,44 +201,106 @@ public class HueSorter extends JPanel implements ActionListener {
 
     }
 
-    int animationPartition(int arr[], int low, int high) {
-        int pivot = arr[high];
-        int i = (low - 1); // index of smaller element
-        for (int j = low; j < high; j++) {
-            // If current element is smaller than or
-            // equal to pivot
-            if (arr[j] <= pivot) {
-                i++;
+    public int animationPartition(int[] numbers, int i, int k) {
+        int l;
+        int h;
+        int midpoint;
+        int pivot;
+        int temp;
+        boolean done;
 
-                // swap arr[i] and arr[j]
-                int temp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = temp;
+        /* Pick middle element as pivot */
+        midpoint = i + (k - i) / 2;
+        pivot = numbers[midpoint];
+
+        done = false;
+        l = i;
+        h = k;
+
+        while (!done) {
+            /* Increment l while numbers[l] < pivot */
+            while (numbers[l] < pivot) {
+                ++l;
+            }
+
+            /* Decrement h while pivot < numbers[h] */
+            while (pivot < numbers[h]) {
+                --h;
+            }
+
+            /*
+             * If there are zero or one items remaining,
+             * all numbers are partitioned. Return h
+             */
+            if (l >= h) {
+                done = true;
+            } else {
+                /*
+                 * Swap numbers[l] and numbers[h],
+                 * update l and h
+                 */
+                temp = numbers[l];
+                numbers[l] = numbers[h];
+                numbers[h] = temp;
+
+                ++l;
+                --h;
                 repaint();
             }
         }
-        return i + 1;
+
+        return h;
     }
 
-    int partition(int arr[], int low, int high) {
-        int pivot = arr[high];
-        int i = (low - 1); // index of smaller element
-        for (int j = low; j < high; j++) {
-            // If current element is smaller than or
-            // equal to pivot
-            if (arr[j] <= pivot) {
-                i++;
+    public int partition(int[] numbers, int i, int k) {
+        int l;
+        int h;
+        int midpoint;
+        int pivot;
+        int temp;
+        boolean done;
 
-                // swap arr[i] and arr[j]
-                int temp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = temp;
+        /* Pick middle element as pivot */
+        midpoint = i + (k - i) / 2;
+        pivot = numbers[midpoint];
+
+        done = false;
+        l = i;
+        h = k;
+
+        while (!done) {
+            /* Increment l while numbers[l] < pivot */
+            while (numbers[l] < pivot) {
+                ++l;
+            }
+
+            /* Decrement h while pivot < numbers[h] */
+            while (pivot < numbers[h]) {
+                --h;
+            }
+
+            /*
+             * If there are zero or one items remaining,
+             * all numbers are partitioned. Return h
+             */
+            if (l >= h) {
+                done = true;
+            } else {
+                /*
+                 * Swap numbers[l] and numbers[h],
+                 * update l and h
+                 */
+                temp = numbers[l];
+                numbers[l] = numbers[h];
+                numbers[h] = temp;
+
+                ++l;
+                --h;
             }
         }
-        return i + 1;
-    }
 
-    //
+        return h;
+    }
 
     public void incrementingSort() {
         if (countingTime == 0) {
@@ -297,7 +360,7 @@ public class HueSorter extends JPanel implements ActionListener {
                 changeSortTypeLeft();
             }
         });
-        timer = new Timer(1, this);
+        timer = new Timer(2, this);
     }
 
     public void makeRandom() {
