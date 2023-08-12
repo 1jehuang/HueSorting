@@ -1,4 +1,4 @@
-package com.example;
+package HueSortingProject;
 
 import java.util.Arrays;
 

@@ -1,4 +1,4 @@
-package com.example;
+package HueSortingProject;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,7 +22,7 @@ import java.lang.Integer;
 public class SortingVisualizer extends JPanel {
     private static final int WIDTH = 800;
     private static final int HEIGHT = 600;
-    private static final int BAR_WIDTH = 5;
+    private static final int BAR_WIDTH = 2;
     private static final int NUM_BARS = WIDTH / BAR_WIDTH;
     private static final int MAX_BAR_HEIGHT = HEIGHT - 50;
     private static final int MIN_BAR_HEIGHT = 10;

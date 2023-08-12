@@ -1,3 +1,5 @@
+package HueSortingProject;
+
 import javax.swing.*;
 import java.awt.*;
 
